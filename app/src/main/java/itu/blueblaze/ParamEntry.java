@@ -8,6 +8,10 @@ public class ParamEntry {
     private String mName;
     private int mValue;
 
+    public ParamEntry() {
+        super();
+    }
+
     public ParamEntry(String name, int value) {
         mName = name;
         mValue = value;

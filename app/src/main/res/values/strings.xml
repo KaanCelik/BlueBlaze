@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BlueBlaze</string>
+    <string name="dialog_parameter_name_hint">Enter parameter name..</string>
+    <string name="dialog_parameter_value_hint">Enter parameter value..</string>
+    <string name="dialog_parameter_title">Add new parameter</string>
+    <string name="menu_add_new">New Parameter</string>
 </resources>

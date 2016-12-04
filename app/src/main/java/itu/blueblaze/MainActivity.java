@@ -8,4 +8,5 @@ public class MainActivity extends SingleFragmentActivity {
     public Fragment createFragment() {
         return new ItemListFragment();
     }
+
 }
