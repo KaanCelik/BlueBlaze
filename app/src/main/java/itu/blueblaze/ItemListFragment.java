@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by KaaN on 1-12-2016.
@@ -28,10 +29,8 @@ public class ItemListFragment extends Fragment {
     private static final String PARAMETER_ENTRY_DIALOG ="ParameterEntryDialog";
     private static final int REQUEST_PARAMETER_ENTRY = 0;
     private RecyclerView mRecyclerView;
+    private ItemAdapter mAdapter;
 
-    public interface Callback{
-
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,10 +47,15 @@ public class ItemListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         //set adapter for the mRecyclerView here
-        mRecyclerView.setAdapter(new ItemAdapter(ParamKeeper.get().getParamEntries()));
+        updateUI();
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -64,13 +68,26 @@ public class ItemListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if(R.id.menu_item_new_word == item.getItemId()){
-            ParameterEntryDialogFragment dialogFragment = new ParameterEntryDialogFragment();
+            ParamEntry paramEntry = new ParamEntry(UUID.randomUUID());
+            ParameterEntryDialogFragment dialogFragment = ParameterEntryDialogFragment.newInstance(paramEntry);
             startEntryDialog(dialogFragment);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void startEntryDialog(ParameterEntryDialogFragment dialogFragment) {
+
+    public void updateUI(){
+        if(mAdapter == null){
+            mAdapter = new ItemAdapter(ParamKeeper.get(getContext()).getParameterList());
+            mRecyclerView.setAdapter(mAdapter);
+        } else  {
+            mAdapter.setParamEntryList(ParamKeeper.get(getContext()).getParameterList());
+            mAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    private void startEntryDialog(ParameterDialogFragment dialogFragment) {
         FragmentManager fragmentManager = getFragmentManager();
         dialogFragment.setTargetFragment(ItemListFragment.this,REQUEST_PARAMETER_ENTRY);
         dialogFragment.show(fragmentManager, PARAMETER_ENTRY_DIALOG);
@@ -92,7 +109,7 @@ public class ItemListFragment extends Fragment {
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ParameterEntryDialogFragment dialogFragment =  ParameterEntryDialogFragment.newInstance(mParamEntry);
+                    ParameterEditDialogFragment dialogFragment =  ParameterEditDialogFragment.newInstance(mParamEntry);
                     startEntryDialog(dialogFragment);
                 }
             });
@@ -101,7 +118,8 @@ public class ItemListFragment extends Fragment {
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO delete parameter here
+                    ParamKeeper.get(getContext()).delete(mParamEntry);
+                    updateUI();
                 }
             });
         }

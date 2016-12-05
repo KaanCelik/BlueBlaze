@@ -1,10 +1,13 @@
 package itu.blueblaze;
 
+import java.util.UUID;
+
 /**
  * Created by KaaN on 1-12-2016.
  */
 
 public class ParamEntry {
+    private UUID mId;
     private String mName;
     private int mValue;
 
@@ -12,9 +15,22 @@ public class ParamEntry {
         super();
     }
 
+    public ParamEntry(UUID id) {
+        mId = id;
+    }
+
     public ParamEntry(String name, int value) {
         mName = name;
         mValue = value;
+    }
+
+
+    public UUID getId() {
+        return mId;
+    }
+
+    public void setId(UUID id) {
+        mId = id;
     }
 
     public String getName() {
