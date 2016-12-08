@@ -1,8 +1,11 @@
 package itu.blueblaze;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,20 +18,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.UUID;
+
+import itu.blueblaze.bluetooth.BluetoothFragment;
+import itu.blueblaze.bluetooth.BluetoothService;
+import itu.blueblaze.bluetooth.DeviceListActivity;
 
 /**
  * Created by KaaN on 1-12-2016.
  */
 
-public class ItemListFragment extends Fragment {
+public class ItemListFragment extends BluetoothFragment {
 
     private static final String TAG = "ItemListFragment";
     private static final String PARAMETER_ENTRY_DIALOG ="ParameterEntryDialog";
     private static final int REQUEST_PARAMETER_ENTRY = 0;
+
+    /**
+     * Member RecyclerView object
+     * Displays ParamEntry objects stored at db
+     */
     private RecyclerView mRecyclerView;
+    /**
+     * Adapter for RecyclerView
+     * Binds ParamEntry objects to views
+     */
     private ItemAdapter mAdapter;
 
 
@@ -37,6 +54,7 @@ public class ItemListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
 
     @Nullable
     @Override
@@ -59,7 +77,7 @@ public class ItemListFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+        //super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.fragment_list, menu);
         Log.i(TAG,"onCreateOptionsMenu");
     }
@@ -67,14 +85,16 @@ public class ItemListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(R.id.menu_item_new_word == item.getItemId()){
-            ParamEntry paramEntry = new ParamEntry(UUID.randomUUID());
-            ParameterEntryDialogFragment dialogFragment = ParameterEntryDialogFragment.newInstance(paramEntry);
-            startEntryDialog(dialogFragment);
+        switch (item.getItemId()) {
+            case R.id.menu_item_new_word: {
+                ParamEntry paramEntry = new ParamEntry(UUID.randomUUID());
+                ParameterEntryDialogFragment dialogFragment = ParameterEntryDialogFragment.newInstance(paramEntry);
+                startEntryDialog(dialogFragment);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     public void updateUI(){
         if(mAdapter == null){
