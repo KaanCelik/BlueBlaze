@@ -69,7 +69,6 @@ public class BluetoothService {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
-
     /**
      * Constructor. Prepares a new BluetoothChat session.
      *

@@ -15,6 +15,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
     private Fragment mFragment;
 
     public abstract Fragment createFragment();
+    public abstract String getLauncherFragmentTag();
 
     protected int getLayoutResourceId(){
         return R.layout.activity_fragment;
@@ -29,7 +30,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(fragmentManager.findFragmentById(R.id.fragment_container)== null){
             mFragment = createFragment();
-            fragmentTransaction.add(R.id.fragment_container,mFragment);
+            fragmentTransaction.add(R.id.fragment_container,mFragment,getLauncherFragmentTag());
         }
         fragmentTransaction.commit();
     }

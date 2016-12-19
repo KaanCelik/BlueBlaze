@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -33,9 +36,11 @@ import itu.blueblaze.bluetooth.DeviceListActivity;
 
 public class ItemListFragment extends BluetoothFragment {
 
-    private static final String TAG = "ItemListFragment";
+    public static final String TAG = "ItemListFragment";
     private static final String PARAMETER_ENTRY_DIALOG ="ParameterEntryDialog";
     private static final int REQUEST_PARAMETER_ENTRY = 0;
+
+
 
     /**
      * Member RecyclerView object
@@ -48,6 +53,16 @@ public class ItemListFragment extends BluetoothFragment {
      */
     private ItemAdapter mAdapter;
 
+
+    @Override
+    public void onMessageRead(Message msg) {
+        Log.i(TAG,"Message Received.");
+    }
+
+    @Override
+    public void onMessageWrite(Message msg) {
+        Log.i(TAG,"Message Written.");
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +91,12 @@ public class ItemListFragment extends BluetoothFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mAdapter = null;
+        //mRecyclerView.setAdapter(null);
+    }
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         //super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.fragment_list, menu);
@@ -86,17 +107,55 @@ public class ItemListFragment extends BluetoothFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.menu_item_new_word: {
-                ParamEntry paramEntry = new ParamEntry(UUID.randomUUID());
-                ParameterEntryDialogFragment dialogFragment = ParameterEntryDialogFragment.newInstance(paramEntry);
-                startEntryDialog(dialogFragment);
+            case R.id.menu_item_new_word:
+                    ParamEntry paramEntry = new ParamEntry(UUID.randomUUID());
+                    ParameterEntryDialogFragment dialogFragment = ParameterEntryDialogFragment.newInstance(paramEntry);
+                    startEntryDialog(dialogFragment);
+                    return true;
+            case R.id.menu_item_sync:
+                    sendAll();
+                    break;
+
+            case R.id.menu_item_show_console: {
+                Callback callback = (Callback) getActivity();
+                //callback.onShowConsole();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentManager.popBackStackImmediate(this.getClass().getName(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                Fragment fragment = fragmentManager.findFragmentByTag(ConsoleFragment.TAG);
+                if(fragment == null){
+                    fragmentTransaction.detach(this);
+                    fragment = new ConsoleFragment();
+                    fragmentTransaction.add(R.id.fragment_container,fragment,ConsoleFragment.TAG);
+                    fragmentTransaction.addToBackStack(fragment.getClass().getName());
+                    fragmentTransaction.commit();
+                }else{
+                    fragmentTransaction.detach(this);
+                    fragmentTransaction.attach(fragment).addToBackStack(fragment.getClass().getName());
+                    fragmentTransaction.commit();
+                }
                 return true;
+
             }
+
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Sends all the parameters currently saved on database.
+     * Messages are sent one value at a time.
+     */
+    private void sendAll() {
+        List<ParamEntry> params = ParamKeeper.get(getContext()).getParameterList();
+        for (ParamEntry element : params){
+            sendMessage(element.getValueText());
+        }
+    }
+
+    @Override
     public void updateUI(){
+        super.updateUI();
         if(mAdapter == null){
             mAdapter = new ItemAdapter(ParamKeeper.get(getContext()).getParameterList());
             mRecyclerView.setAdapter(mAdapter);

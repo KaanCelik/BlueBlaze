@@ -5,6 +5,9 @@
     <string name="dialog_add_parameter_title">Add new parameter</string>
     <string name="dialog_edit_parameter_title">Edit parameter</string>
     <string name="menu_add_new">New Parameter</string>
+    <string name="menu_show_console">Console</string>
+    <string name="menu_show_list">Show List</string>
+    <string name="menu_sync">Sync</string>
 
     <string name="ex_parameter_not_found">Word not found.</string>
     <string name="alert_invalid_input">Invalid input !</string>

@@ -6,7 +6,6 @@ import java.util.UUID;
 
 /**
  * Created by KaaN on 3-12-2016.
- * <p>
  * This fragment displays a dialog and receives user input for new parameters.
  */
 

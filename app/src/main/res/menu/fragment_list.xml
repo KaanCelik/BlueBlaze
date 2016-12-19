@@ -7,10 +7,21 @@
         android:title="@string/menu_add_new"
         app:showAsAction="ifRoom|withText"
         />
+
+    <item
+        android:id="@+id/menu_item_show_console"
+        android:title="@string/menu_show_console"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/menu_item_sync"
+        android:title="@string/menu_sync"
+        app:showAsAction="ifRoom|withText"
+        />
     <item
         android:id="@+id/secure_connect_scan"
         android:icon="@drawable/ic_action_device_access_bluetooth_searching"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="@string/secure_connect"/>
 
     <item
@@ -22,4 +33,6 @@
         android:id="@+id/discoverable"
         app:showAsAction="never"
         android:title="@string/discoverable"/>
+
+
 </menu>
